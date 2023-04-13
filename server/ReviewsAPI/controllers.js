@@ -16,7 +16,8 @@ const getReviewsMeta = (req, res) => {
 }
 
 const createReview = (req, res) => {
-  const params = req.query;
+  const params = req.body;
+
   Queries.createReview(params).then(() => res.status(201).end());
 }
 

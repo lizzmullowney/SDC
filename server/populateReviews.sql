@@ -1,13 +1,6 @@
-/*
-COPY reviews(review_id, product_id, rating, epoch_time, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) FROM '/Users/lizzmullowney/SDC/server/reviewsCSV/reviews.csv' DELIMITER ',' CSV HEADER;
 
-ALTER TABLE reviews ADD COLUMN review_date TIMESTAMP;
+COPY reviews(review_id, product_id, rating, review_date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) FROM '/Users/lizzmullowney/SDC/server/reviewsCSV/reviews.csv' DELIMITER ',' CSV HEADER;
 
-UPDATE reviews SET review_date = to_timestamp(epoch_time);
-
-ALTER TABLE reviews DROP COLUMN epoch_time;
-
-*/
 
 COPY review_photos(photo_id, review_id, photo_url) FROM '/Users/lizzmullowney/SDC/server/reviewsCSV/reviews_photos.csv' DELIMITER ',' CSV HEADER;
 

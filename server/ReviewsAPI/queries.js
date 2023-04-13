@@ -1,16 +1,60 @@
 //require database file
 const db = require('./db.js');
 
+async function createReview(params) {
+  console.log('in createReviews, these are the params', params);
+  //insert into reviews
+  //create array of values from the form
+  const queryParams = Object.values(params).slice(0, 7);
+  const defaultParams = [Math.floor(Date.now() / 1000), false, 0]
+  const fullParams = queryParams.concat(defaultParams);
+  const charObject = params.characteristics;
+  const charIdArray = Object.keys(charObject);
+  const charRatings = Object.values(charObject);
+  if (params.photos) {
+    var photosArray = params.photos;
+
+  }
+  const reviewQuery = `INSERT INTO reviews
+  (review_id, product_id, rating, summary, body, recommend, reviewer_name, reviewer_email, review_date, reported, helpfulness)
+  VALUES (nextval('review_sequence'), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+  RETURNING review_id;`
+
+  try {
+    const result = await db.query(reviewQuery, fullParams);
+    const reviewId = result.rows[0].review_id;
+    //I may need to create a sequence for the photo id
+    //for each element in the photo array
+    //db.query insert into review_photos (review_id)
+    if (photosArray) {
+      for (var i =0; i < photosArray.length; i++) {
+        await db.query(`INSERT INTO review_photos (photo_id, review_id, photo_url) VALUES(nextval('photo_sequence'), $1, $2)`, [reviewId, photosArray[i]])
+      }
+    }
+    //for the charactertistics objects I need to insert into the characteristics_rating table specifically the characteristics_rating_id (which I can get with nextval char sequence) charactertic_id (from params.characteristics?? and reviewId which I have saved!)
+    for (var j = 0; j < charIdArray.length; j++) {
+      await db.query(`INSERT INTO characteristics_rating (characteristics_rating_id, characteristic_id, review_id, rating_value) VALUES(nextval('char_sequence'), $1, $2, $3)`, [charIdArray[j], reviewId, charRatings[j]])
+    }
+    db.end();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 async function getReviewsById(params) {
   //parameters could include .page .count .sort
   // create sortedBY query
   //if params.sort
+  const page = params.page || 0;
+  const count = params.count || 5;
   const ReviewQuery =
      `SELECT
       review_id, rating, summary, recommend, response, body, review_date, reviewer_name, helpfulness
       FROM reviews
       WHERE reported = false
-      AND product_id = ${params.product_id}`
+      AND product_id = ${params.product_id}
+      limit ${count}
+      offset ${page}`
       ;
 
   try {
@@ -124,11 +168,15 @@ async function getReviewsMeta(params) {
     console.log('IN CATCH BLOCK, heres the err', err);
     db.end();
   }
-}
+};
+
+
+
 
 module.exports = {
   getReviewsById,
   markReviewHelpful,
   reportReview,
   getReviewsMeta,
+  createReview,
 }

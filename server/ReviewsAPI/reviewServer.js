@@ -1,6 +1,6 @@
 const express = require('express');
 const app =express();
-const port =3000;
+const port =3001;
 app.use(express.json());
 //will this interfere with server on front end that is calling this API? IDK!!!
 const bodyParser = require('body-parser');
@@ -19,6 +19,7 @@ app.get('/reviews/meta', (req, res) => {
 });
 
 app.post('/reviews/', (req, res) => {
+  console.log('I am in app.post yo!')
   controllers.createReview(req, res)
 });
 

@@ -4,10 +4,10 @@
 
 
 CREATE TABLE reviews (
-  review_id INT PRIMARY KEY,
+  review_id SERIAL PRIMARY KEY,
   product_id INT  NOT NULL,
   rating INT  NOT NULL,
-  epoch_time BIGINT NOT NULL,
+  review_date BIGINT NOT NULL,
   summary VARCHAR ( 255 ),
   body VARCHAR ( 1000) ,
   recommend BOOLEAN,
@@ -19,7 +19,7 @@ CREATE TABLE reviews (
 );
 
 CREATE TABLE review_photos (
-  photo_id INT PRIMARY KEY,
+  photo_id SERIAL PRIMARY KEY,
   review_id INT,
   CONSTRAINT fk_review_id
   FOREIGN KEY (review_id)
